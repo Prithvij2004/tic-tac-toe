@@ -1,5 +1,3 @@
-# tic_tac_toe.logic.models.py
-
 import enum
 import re
 from typing import Self
@@ -7,7 +5,7 @@ from typing import Self
 from dataclasses import dataclass
 from functools import cached_property
 
-from tic_tac_toe.logic.validatiors import validate_grid
+from tic_tac_toe.logic.validatiors import validate_grid, validate_game_state
 
 
 WINNING_PATTERNS = (
@@ -61,6 +59,9 @@ class Move:
 class GameState:
     grid: Grid
     starting_mark: Mark = Mark("X")
+
+    def __post_init__(self) -> None:
+        validate_game_state(self)
 
     @cached_property
     def current_mark(self) -> Mark:
