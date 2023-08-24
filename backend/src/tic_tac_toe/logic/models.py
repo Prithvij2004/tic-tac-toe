@@ -5,7 +5,7 @@ from typing import Self
 from dataclasses import dataclass
 from functools import cached_property
 
-from tic_tac_toe.exceptions import InvalidMove
+from tic_tac_toe.logic.exceptions import InvalidMove
 from tic_tac_toe.logic.validatiors import validate_grid, validate_game_state
 
 
@@ -39,15 +39,15 @@ class Grid:
         
     @cached_property
     def x_count(self) -> int:
-        return self.cells.count('X')
+        return self.cells.count("X")
     
     @cached_property
     def o_count(self) -> int:
-        return self.cells.count('O')
+        return self.cells.count("O")
     
     @cached_property
     def space_count(self) -> int:
-        return self.cells.count(' ')
+        return self.cells.count(" ")
     
 @dataclass(frozen=True)
 class Move:
@@ -79,10 +79,19 @@ class GameState:
     
     @cached_property
     def tie(self) -> bool:
-        return self.winner is None and self.space_count == 0
+        return self.winner is None and self.grid.space_count == 0
     
     @cached_property
-    def winner(self) -> list[int]:
+    def winner(self) -> Mark | None:
+        for pattern in WINNING_PATTERNS:
+            for mark in Mark:
+                if re.match(pattern.replace('?', mark), self.grid.cells):
+                    return mark
+                
+        return None
+    
+    @cached_property
+    def winning_cells(self) -> list[int]:
         for pattern in WINNING_PATTERNS:
             for mark in Mark:
                 if re.match(pattern.replace('?', mark), self.grid.cells):

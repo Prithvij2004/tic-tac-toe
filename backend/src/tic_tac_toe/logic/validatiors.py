@@ -18,11 +18,11 @@ def validate_grid(grid: Grid) -> None:
 def validate_game_state(game_state: GameState) -> None:
     validate_number_of_marks(game_state.grid)
     validate_starting_mark(game_state.grid, game_state.starting_mark)
-    validate_winner(game_state.grid,game_state.starting_mark , game_state.winner)
+    validate_winner(game_state.grid, game_state.starting_mark , game_state.winner)
 
 def validate_number_of_marks(grid: Grid) -> None:
     if abs(grid.x_count - grid.o_count) > 1:
-        return InvalidGameState("Wrong Number of Xs and Os")
+        raise InvalidGameState("Wrong Number of Xs and Os")
     
 def validate_starting_mark(grid: Grid,  starting_mark: Mark):
     if grid.x_count > grid.o_count:
@@ -37,18 +37,18 @@ def validate_winner(grid: Grid, starting_mark: Mark, winner: Mark | None) -> Non
     if winner == "X":
         if starting_mark == "X":
             if grid.x_count <= grid.o_count:
-                return InvalidGameState("Wrong number of Xs")
+                raise InvalidGameState("Wrong number of Xs")
         else:
             if grid.x_count != grid.o_count:
-                return InvalidGameState("Wrong number of Xs")
+                raise InvalidGameState("Wrong number of Xs")
     
     elif winner == "O":
         if starting_mark == "O":
             if grid.o_count <= grid.x_count:
-                return InvalidGameState("Wrong number of Os")
+                raise InvalidGameState("Wrong number of Os")
         else:
             if grid.o_count != grid.x_count:
-                return InvalidGameState("Wrong number of Os")
+                raise InvalidGameState("Wrong number of Os")
             
 def validate_players(player1: Player, player2: Player) -> None:
     if player1.mark is player2.mark:
