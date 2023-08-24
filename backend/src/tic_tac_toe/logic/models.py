@@ -5,6 +5,7 @@ from typing import Self
 from dataclasses import dataclass
 from functools import cached_property
 
+from tic_tac_toe.exceptions import InvalidMove
 from tic_tac_toe.logic.validatiors import validate_grid, validate_game_state
 
 
@@ -73,7 +74,7 @@ class GameState:
         return self.grid.space_count == 9
     
     @cached_property
-    def game_pver(self) -> bool:
+    def game_over(self) -> bool:
         return self.winner is not None or self.tie
     
     @cached_property
@@ -90,3 +91,28 @@ class GameState:
                         for match in re.finditer(r"\?", pattern)
                     ]
         return []
+    
+    @cached_property
+    def possible_moves(self) -> list[Move]:
+        moves = []
+        if not self.game_over:
+            for match in re.finditer(r"\s", self.grid.cells):
+                moves.append(self.make_move_to(match.start()))
+        return moves
+    
+    def make_move_to(self, index: int) -> Move:
+        if self.grid.cells[index] != " ":
+            raise InvalidMove("Cell is not empty")
+        return Move(
+            mark=self.current_mark,
+            cell_index=index,
+            before_state=self,
+            after_state=GameState(
+                Grid(
+                    self.grid.cells[:index]
+                    + self.current_mark
+                    +self.grid.cells[index + 1:]
+                ),
+                self.starting_mark,
+            ),
+        )
